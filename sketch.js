@@ -12,20 +12,28 @@ function setup() {
     frameRate(60)
     start_circle = genCircle(10)
     start_circle = subdivideShape(start_circle, 1)
-    print(start_circle)
 }
 
 let start_circle = []
 function draw() {
-    print(start_circle)
     drawShape(start_circle)
-    fill("red")
-    translate(400, 400)
-    // let n = start_circle
-    ellipse(start_circle[0].x, start_circle[0].y, 10, 10)
-    translate(-400, -400)
+
+    // fill("red")
+    // translate(400, 400)
+    // let n = start_circle[0].cross(start_circle[1])
+    // print(n)
+    // ellipse(start_circle[0].x, start_circle[0].y, 10, 10)
+    // findPerpSlope(start_circle[0], start_circle[1])
+    // ellipse(n.x, n.y, 10, 10)
+    // translate(-400, -400)
 
     noLoop()
+}
+
+function findPerpAngle(v1, v2) {
+    // straight up just take the vector between v1 and v2, and flip the x and y and - the y
+    let vec = createVector(-(v2.y - v1.y), v2.x - v1.x).normalize()
+    return vec
 }
 
 function subdivideShape(vertv, amt) {
@@ -37,6 +45,14 @@ function subdivideShape(vertv, amt) {
             let v1 = vertv[edge_i]
             let v2 = vertv[(edge_i + 1) % vertv.length]
             let vnew = subdivideEdge(v1, v2, 0.5)
+            let perp = findPerpAngle(v1 ,v2)
+
+            translate(400, 400)
+            ellipse(perp.x, perp.y, 20, 20)
+            translate(-400, -400)
+
+            vnew.sub(perp.mult(random(0,20)))
+
             chiseled.push(v1, vnew)
         }
         // chiseled.push(vertv[vertv.length - 1])
