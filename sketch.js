@@ -1,32 +1,32 @@
 /* todo
  * x draw variable circle
- * - subdivide with skewing out
+ * x subdivide with skewing out
+ * magnitude for each edge
+ * lessen over time
  * - layer cirle's iterations of 3 subd's with diminishing opacity
  * - play with color equation
  */
 
 let can; let canw = 800; let canh = 800;
 
+let start_circle = []
+let edges = 10
+let magnitudes_per_edge = [0.8, 0.7, .9, 1.0, 0.9]
+let subd_per_layer = 5
+let layers = 3
 function setup() {
     can = createCanvas(canh, canw)
     frameRate(60)
-    start_circle = genCircle(10)
-    start_circle = subdivideShape(start_circle, 1)
+    start_circle = genCircle(edges)
+    start_circle = subdivideShape(start_circle, magnitudes_per_edge, subd_per_layer)
+    print("done")
+    // print(start_circle)
 }
 
-let start_circle = []
 function draw() {
+    noStroke()
+    fill("orange")
     drawShape(start_circle)
-
-    // fill("red")
-    // translate(400, 400)
-    // let n = start_circle[0].cross(start_circle[1])
-    // print(n)
-    // ellipse(start_circle[0].x, start_circle[0].y, 10, 10)
-    // findPerpSlope(start_circle[0], start_circle[1])
-    // ellipse(n.x, n.y, 10, 10)
-    // translate(-400, -400)
-
     noLoop()
 }
 
@@ -36,22 +36,22 @@ function findPerpAngle(v1, v2) {
     return vec
 }
 
-function subdivideShape(vertv, amt) {
+function subdivideShape(vertv, magv, amt) {
     if(vertv.length < 2) { print("Need >2 vertices"); return false; }
 
     let chiseled = []
     for(let subd_i = 0; subd_i < amt; subd_i++){
+        chiseled = []
         for(let edge_i = 0; edge_i < vertv.length; edge_i++) {
             let v1 = vertv[edge_i]
             let v2 = vertv[(edge_i + 1) % vertv.length]
             let vnew = subdivideEdge(v1, v2, 0.5)
+
+            let mag = magv[edge_i]
+
+            // jut out
             let perp = findPerpAngle(v1 ,v2)
-
-            translate(400, 400)
-            ellipse(perp.x, perp.y, 20, 20)
-            translate(-400, -400)
-
-            vnew.sub(perp.mult(random(0,20)))
+            vnew = vnew.sub(perp.mult(randomGaussian(9,8) * mag))
 
             chiseled.push(v1, vnew)
         }
