@@ -12,18 +12,31 @@ function setup() {
     frameRate(60)
 }
 
+let start_circle = []
 function draw() {
-    drawCircle(7)
+    start_circle = genCircle(10)
+    print(start_circle)
+    drawShape(start_circle)
     noLoop()
 }
 
-function drawCircle(verts) {
-    let off = 200
-    let r = 100
-    translate(off, off)
-    for(let i = -Math.PI; i < Math.PI; i+=(2*Math.PI)/verts) {
-        ellipse(cos(i) * r, sin(i) * r, 10, 10)
-        print(1)
+function genCircle(vertc, r=100) {
+    let circle = []
+    for(let i = -Math.PI; i < Math.PI; i+=(2*Math.PI)/vertc) {
+        circle.push([cos(i) * r, sin(i) * r])
     }
-    translate(-off, -off)
+    return circle
+}
+
+// Take an array of 2D vectors and draw them
+function drawShape(vertv, offx = canw/2, offy = canh/2) {
+    translate(offx, offy)
+    beginShape()
+    for (let v_i = 0; v_i < vertv.length; v_i++) {
+        let x = vertv[v_i][0]
+        let y = vertv[v_i][1]
+        vertex(x, y)
+    }
+    endShape(CLOSE)
+    translate(-offx, -offy)
 }
