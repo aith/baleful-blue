@@ -19,6 +19,11 @@ let start_circle = []
 function draw() {
     print(start_circle)
     drawShape(start_circle)
+    fill("red")
+    translate(400, 400)
+    // let n = start_circle
+    ellipse(start_circle[0].x, start_circle[0].y, 10, 10)
+    translate(-400, -400)
 
     noLoop()
 }
@@ -32,20 +37,18 @@ function subdivideShape(vertv, amt) {
             let v1 = vertv[edge_i]
             let v2 = vertv[(edge_i + 1) % vertv.length]
             let vnew = subdivideEdge(v1, v2, 0.5)
-            ellipse(vnew[0], vnew[1], 10, 10)
             chiseled.push(v1, vnew)
         }
         // chiseled.push(vertv[vertv.length - 1])
         vertv = chiseled.slice()
     }
-    
     return chiseled
 }
 
 function genCircle(vertc, r=100) {
     let circle = []
     for(let i = -Math.PI; i < Math.PI; i+=(2*Math.PI)/vertc) {
-        circle.push([cos(i) * r, sin(i) * r])
+        circle.push(createVector(cos(i) * r, sin(i) * r))
     }
     return circle
 }
@@ -55,8 +58,8 @@ function drawShape(vertv, offx = canw/2, offy = canh/2) {
     translate(offx, offy)
     beginShape()
     for (let v_i = 0; v_i < vertv.length; v_i++) {
-        let x = vertv[v_i][0]
-        let y = vertv[v_i][1]
+        let x = vertv[v_i].x
+        let y = vertv[v_i].y
         vertex(x, y)
     }
     endShape(CLOSE)
@@ -65,7 +68,7 @@ function drawShape(vertv, offx = canw/2, offy = canh/2) {
 
 // return the interpolated vertex: one x-y pair
 function subdivideEdge(v1, v2, lerp_ratio) {
-    let v3x = lerp(v1[0], v2[0], lerp_ratio)
-    let v3y = lerp(v1[1], v2[1], lerp_ratio)
-    return [v3x, v3y]
+    let v3x = lerp(v1.x, v2.x, lerp_ratio)
+    let v3y = lerp(v1.y, v2.y, lerp_ratio)
+    return createVector(v3x, v3y)
 }
