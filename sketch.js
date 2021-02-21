@@ -1,9 +1,9 @@
 /* todo
  * x draw variable circle
  * x subdivide with skewing out
- * magnitude for each edge
- * lessen over time
- * - layer cirle's iterations of 3 subd's with diminishing opacity
+ * x magnitude for each edge
+ * x lessen over time
+ * x layer cirle's iterations of 3 subd's with diminishing opacity
  * - play with color equation
  */
 
@@ -18,16 +18,16 @@ class growVec {
 
 let start_circle = []
 let edges = 10
-let magnitudes_per_edge = [0.8, 0.7, .9, 1.0, 0.9]
+let magnitudes_per_edge = [0.8, 0.7, 1.2, 1.5, 1.4, 0.6, 0.5, 1.9, 1.8, 0.9]
 let subd_per_layer = 6
-let layers = 3
+let layers = 6
 function setup() {
     can = createCanvas(canh, canw)
     frameRate(60)
     let circle_verts = genCircle(edges)
     // Create growVecs
     for(let edge_i = 0; edge_i < circle_verts.length; edge_i++) {
-        let mag = 1
+        let mag = magnitudes_per_edge[edge_i]
         let x = circle_verts[edge_i].x
         let y = circle_verts[edge_i].y
         start_circle.push(new growVec(createVector(x, y), mag));
@@ -54,12 +54,13 @@ function draw() {
     // DRAW
     translate(off, off)
     for(let layer_i = 0; layer_i < layers; layer_i++){
-        let alpha = 220 / (layer_i + 1);
+        let alpha = 220 / sqrt(layer_i);
+        subd_per_layer = subd_per_layer - 1
 
         start_circle = subdivideShape(start_circle, subd_per_layer, layer_i * subd_per_layer)
 
         noStroke()
-        fill(255, 69, 0, alpha)
+        fill(8,39,245, alpha)
         beginShape()
         for(let v_i = 0; v_i < start_circle.length; v_i++) {
             let x = start_circle[v_i].vec.x
@@ -87,7 +88,7 @@ function subdivideShape(vertv, amt, start_subd_i = 0) {
     for(let subd_i = 0; subd_i < amt; subd_i++){
         chiseled = []
         chiseled_mags = []
-        let mag_falloff = 1 / (sqrt(start_subd_i) + 1);
+        let mag_falloff = 1.5*(1 / ((start_subd_i) + 1));
         for(let edge_i = 0; edge_i < vertv.length; edge_i++) {
             let v1 = vertv[edge_i]
             let v2 = vertv[(edge_i + 1) % vertv.length]
@@ -96,7 +97,7 @@ function subdivideShape(vertv, amt, start_subd_i = 0) {
 
             // jut out
             let perp = findPerpAngle(v1.vec,v2.vec)
-            vnew.vec = vnew.vec.sub(perp.mult(randomGaussian(9,8) * mag * mag_falloff))
+            vnew.vec = vnew.vec.sub(perp.mult(randomGaussian(10,6) * mag * mag_falloff))
             chiseled.push(v1, vnew)
         }
         // chiseled.push(vertv[vertv.length - 1])
@@ -107,7 +108,7 @@ function subdivideShape(vertv, amt, start_subd_i = 0) {
 }
 
 // Return array of coordinates (vector struct)
-function genCircle(vertc, r=100) {
+function genCircle(vertc, r=150) {
     let circle = []
     for(let i = -Math.PI; i < Math.PI; i+=(2*Math.PI)/vertc) {
         circle.push(createVector(cos(i) * r, sin(i) * r))
